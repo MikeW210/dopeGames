@@ -27,10 +27,13 @@ export default {
   background: #00cad0;
 }
 .home-button {
-  background: #00989b;
+  margin: 1em;
+  border: 0.16em solid rgba(255, 255, 255, 0);
+  border-radius: 2em;
+  background: rgb(23, 3, 97);
   height: 2em;
   width: 4em;
-  border-radius: 5px;
+  color: white;
   box-shadow: 1px 1px 1px rgb(0, 0, 0);
 }
 </style>

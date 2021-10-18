@@ -28,7 +28,7 @@ export default {
 }
 
 body {
-  background: linear-gradient(45deg, #897cff 50%, #eb3c3c 50%);
+  background: rgb(55, 71, 221);
 }
 html {
   font-size: 16px;
