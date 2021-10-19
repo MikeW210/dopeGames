@@ -82,7 +82,7 @@ export default {
     },
     checkForWinner() {
       let numberOfX = 0;
-      // let numberOfO = 0;
+      let numberOfO = 0;
       let rowAdder = 0;
       if (this.isTurnX) {
         for (let row = 0; row < this.numberOfRows; row++) {
@@ -145,6 +145,74 @@ export default {
                 rowAdder = 0;
               }
               if (numberOfX === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+      }
+      if (!this.isTurnX) {
+        for (let row = 0; row < this.numberOfRows; row++) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            if (this.board[row][col] === "O") {
+              numberOfO++;
+              console.log("poziomo");
+            } else {
+              numberOfO = 0;
+            }
+            if (numberOfO === this.lengthOfWinningCombination) {
+              alert("bajlando");
+              break;
+            }
+          }
+        }
+        if (numberOfO !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col] === "X") {
+                numberOfO++;
+                console.log("pionowo");
+              } else {
+                numberOfO = 0;
+              }
+              if (numberOfO === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+        if (numberOfO !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col + rowAdder] === "X") {
+                rowAdder++;
+                numberOfO++;
+                console.log("skosnie prawo");
+              } else {
+                numberOfO = 0;
+                rowAdder = 0;
+              }
+              if (numberOfO === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+        if (numberOfO !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col - rowAdder] === "X") {
+                rowAdder++;
+                numberOfO++;
+                console.log("skosnie- lewo");
+              } else {
+                numberOfO = 0;
+                rowAdder = 0;
+              }
+              if (numberOfO === this.lengthOfWinningCombination) {
                 alert("bajlando");
                 break;
               }
