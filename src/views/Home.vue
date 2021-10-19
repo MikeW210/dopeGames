@@ -26,8 +26,7 @@ export default {
   display: flex;
   width: 100%;
   height: 200px;
-  justify-content: center;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
 }
 .pick-a-game {
@@ -39,6 +38,7 @@ export default {
   font-size: 1rem;
   letter-spacing: 0.08rem;
   position: relative;
+  margin: 1em;
   cursor: pointer;
 }
 </style>
