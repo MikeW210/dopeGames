@@ -6,6 +6,8 @@
     <input type="number" v-model="lengthOfWinningCombination" />
     <button type="submit">Start a game!</button>
   </form>
+  <p v-if="isTurnX">X turn</p>
+  <p v-else>O turn</p>
   <div class="container">
     <div class="rows" :key="rowindex" v-for="(row, rowindex) in board">
       <div
@@ -32,10 +34,12 @@ export default {
       board: [],
       oBoard: [],
       xBoard: [],
+      xBoardHelper: [],
+      xBoardCheck: [],
       isTurnX: false,
-      numberOfRows: "",
-      numberOfColumns: "",
-      lengthOfWinningCombination: "",
+      numberOfRows: 5,
+      numberOfColumns: 5,
+      lengthOfWinningCombination: 2,
       nuberOfTurns: 0,
       isInProgress: false,
     };
@@ -49,9 +53,6 @@ export default {
       console.log(this.isInProgress);
       const rows = this.numberOfRows;
       const columns = this.numberOfColumns;
-      const winningLength = this.lengthOfWinningCombination;
-      console.log("", rows, columns, winningLength);
-
       for (let i = 0; i < rows; i++) {
         const row = [];
         for (let j = 0; j < columns; j++) {
@@ -59,39 +60,137 @@ export default {
         }
         this.board.push(row);
       }
-      console.log(this.board);
     },
     makeATurn(row, col) {
       const params = "" + row + col;
-
-      console.log(this.board);
       if (this.board[row][col] !== "") {
         alert("pole zajete");
       } else {
         if (this.isTurnX) {
           this.xBoard.push(params);
           this.board[row][col] = "X";
-          console.log(this.xBoard);
         } else {
           this.oBoard.push(params);
           this.board[row][col] = "O";
-          console.log(this.oBoard);
         }
         this.numberOfTurns++;
-        this.isTurnX = !this.isTurnX;
         this.checkForWinner();
+        this.isTurnX = !this.isTurnX;
       }
       // if (this.numberOfTurns >= 2 * this.lengthOfWinningCombination - 1) {
       // }
     },
     checkForWinner() {
-      this.xBoard.forEach((element) => {
-        for (let i = 0; i < this.lengthOfWinningCombination; i++) {
-          console.log(element);
+      let numberOfX = 0;
+      // let numberOfO = 0;
+      let rowAdder = 0;
+      if (this.isTurnX) {
+        for (let row = 0; row < this.numberOfRows; row++) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            if (this.board[row][col] === "X") {
+              numberOfX++;
+              console.log("poziomo");
+            } else {
+              numberOfX = 0;
+            }
+            if (numberOfX === this.lengthOfWinningCombination) {
+              alert("bajlando");
+              break;
+            }
+          }
         }
-      });
+        if (numberOfX !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col] === "X") {
+                numberOfX++;
+                console.log("pionowo");
+              } else {
+                numberOfX = 0;
+              }
+              if (numberOfX === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+        if (numberOfX !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col + rowAdder] === "X") {
+                rowAdder++;
+                numberOfX++;
+                console.log("skosnie prawo");
+              } else {
+                numberOfX = 0;
+                rowAdder = 0;
+              }
+              if (numberOfX === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+        if (numberOfX !== this.lengthOfWinningCombination) {
+          for (let col = 0; col < this.numberOfColumns; col++) {
+            for (let row = 0; row < this.numberOfRows; row++) {
+              if (this.board[row][col - rowAdder] === "X") {
+                rowAdder++;
+                numberOfX++;
+                console.log("skosnie- lewo");
+              } else {
+                numberOfX = 0;
+                rowAdder = 0;
+              }
+              if (numberOfX === this.lengthOfWinningCombination) {
+                alert("bajlando");
+                break;
+              }
+            }
+          }
+        }
+      }
     },
   },
+  // checkForWinner() {
+  //   if (this.isTurnX) {
+  //     for (let row = 0; row < this.numberOfRows; row++) {
+  //       for (let col = 0; col < this.numberOfColumns; col++) {
+  //         if (this.board[row][col] === "") {
+  //           continue;
+  //         } else {
+  //           if (this.board[row][col] === "X") {
+  //             for (let i = 1; i === this.lengthOfWinningCombination; i++) {}
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // },
+  // checkForWinner() {
+  //   if (this.isTurnX) {
+  //     this.xBoardCheck = [];
+  //     this.xBoard.forEach((element) => {
+  //       this.xBoardHelper = [];
+  //       for (let i = 0; i < this.lengthOfWinningCombination; i++) {
+  //         const combinationNextTo = parseInt(element) + i;
+  //         this.xBoardHelper.push(combinationNextTo);
+  //       }
+  //       this.xBoardCheck.push(this.xBoardHelper);
+  //     });
+  //     console.log(this.xBoardCheck.length);
+  //     console.log(this.xBoardCheck);
+  //     for (let row = 0; row < this.xBoardCheck.length; row++) {
+  //       for (let col = 0; col < this.lengthOfWinningCombination; col++) {
+  //         this.xBoardCheck[col];
+  //       }
+  //     }
+  //   } else {
+  //     console.log("tura o");
+  //   }
+  // },
   // resetBoard() {
   //   this.board = [];
   //   this.numberOfRows = 0;
