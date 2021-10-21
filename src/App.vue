@@ -29,6 +29,7 @@ export default {
 
 body {
   background: rgb(55, 71, 221);
+  /* overflow: hidden; */
 }
 html {
   font-size: 16px;
