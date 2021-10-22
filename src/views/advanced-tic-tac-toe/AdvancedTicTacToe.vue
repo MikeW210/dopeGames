@@ -3,8 +3,6 @@ export default {
   data() {
     return {
       board: [],
-      oBoard: [],
-      xBoard: [],
       isTurnX: false,
       numberOfRows: null,
       numberOfColumns: null,
@@ -25,141 +23,128 @@ export default {
     },
     makeATurn(row, col) {
       if (this.isInProgress) {
-        const cell = `${row}${col}`;
-
         if (this.board[row][col] !== "") {
           alert("pole zajete");
         } else {
           if (this.isTurnX) {
-            this.xBoard.push(cell);
             this.board[row][col] = "X";
-          } else {
-            this.oBoard.push(cell);
-            this.board[row][col] = "O";
-          }
-          this.numberOfTurns++;
-
-          if (this.numberOfTurns >= 2 * this.lengthOfWinningCombination - 1) {
-            this.checkForWinner();
-          }
-          this.isTurnX = !this.isTurnX;
+          } else this.board[row][col] = "O";
         }
+        this.numberOfTurns++;
+
+        if (this.numberOfTurns >= 2 * this.lengthOfWinningCombination - 1) {
+          this.checkForWinner();
+        }
+        this.isTurnX = !this.isTurnX;
       } else {
         console.log("koniec debilu xD");
       }
     },
     checkForWinner() {
-      let counter = 0;
-
       const X = "X";
       const O = "O";
 
       const currentLetter = this.isTurnX ? X : O;
 
-      counter = this.checkHorizontally(counter, currentLetter);
+      let won = this.checkHorizontally(currentLetter);
 
-      if (counter !== this.lengthOfWinningCombination) {
-        counter = this.checkVertically(counter, currentLetter);
+      if (!won) {
+        won = this.checkVertically(currentLetter);
       }
 
-      if (counter !== this.lengthOfWinningCombination) {
-        counter = this.checkDiagonallyRight(counter, currentLetter);
+      if (!won) {
+        won = this.checkDiagonallyRight(currentLetter);
       }
 
-      if (counter !== this.lengthOfWinningCombination) {
-        counter = this.checkDiagonallyLeft(counter, currentLetter);
+      if (!won) {
+        won = this.checkDiagonallyLeft(currentLetter);
+      }
+
+      if (won) {
+        this.isInProgress = !this.isInProgress;
+        alert("bajlando");
       }
     },
-    checkHorizontally(length, letter) {
-      for (
-        let row = 0;
-        row < this.numberOfRows - this.lengthOfWinningCombination + 1;
-        row++
-      ) {
-        length = 0;
+    checkHorizontally(letter) {
+      let length = 0;
+
+      for (let row = 0; row < this.numberOfRows; row++) {
         for (let col = 0; col < this.numberOfColumns; col++) {
           if (this.board[row][col] === letter) {
             length++;
-            console.log("poziomo");
           } else {
             length = 0;
           }
           if (length === this.lengthOfWinningCombination) {
-            this.isInProgress = !this.isInProgress;
-            alert("bajlando poziomo");
-            break;
+            return true;
           }
         }
-      }
-      return length;
-    },
-    checkVertically(length, letter) {
-      for (let col = 0; col < this.numberOfColumns; col++) {
         length = 0;
+      }
+
+      return false;
+    },
+    checkVertically(letter) {
+      let length = 0;
+      for (let col = 0; col < this.numberOfColumns; col++) {
         for (let row = 0; row < this.numberOfRows; row++) {
           if (this.board[row][col] === letter) {
             length++;
-            console.log("pionowo");
           } else {
             length = 0;
           }
           if (length === this.lengthOfWinningCombination) {
-            this.isInProgress = !this.isInProgress;
-            alert("bajlando pionowo");
-            break;
+            return true;
           }
         }
+        length = 0;
       }
-      return length;
+      return false;
     },
-    checkDiagonallyRight(length, letter) {
-      let adder = 0;
+    checkDiagonallyRight(letter) {
+      let adder = 0,
+        length = 0;
 
       for (let col = 0; col < this.numberOfColumns; col++) {
         for (let row = 0; row < this.numberOfRows; row++) {
           if (this.board[row][col + adder] === letter) {
             adder++;
             length++;
-            console.log("skosnie prawo");
           } else {
             length = 0;
             adder = 0;
           }
           if (length === this.lengthOfWinningCombination) {
-            this.isInProgress = !this.isInProgress;
-            alert("bajlando skosnie w prawo");
-            break;
+            return true;
           }
         }
+        length = 0;
       }
-      return length;
+      return false;
     },
-    checkDiagonallyLeft(length, letter) {
-      let adder = 0;
+    checkDiagonallyLeft(letter) {
+      let adder = 0,
+        length = 0;
 
       for (let col = 0; col < this.numberOfColumns; col++) {
         for (let row = 0; row < this.numberOfRows; row++) {
           if (this.board[row][col - adder] === letter) {
             adder++;
             length++;
-            console.log("skosnie- lewo");
           } else {
             length = 0;
             adder = 0;
           }
           if (length === this.lengthOfWinningCombination) {
-            this.isInProgress = !this.isInProgress;
-            alert("bajlando skosnie w lewo");
-            break;
+            return true;
           }
         }
+        length = 0;
       }
-      return length;
+      return false;
     },
     resetBoard(numberOfRows, numberOfColumns, lengthOfWinningCombination) {
       this.board = [];
-      this.oBoard = [];
-      this.xBoard = [];
       this.isTurnX = false;
       this.numberOfRows = numberOfRows;
       this.numberOfColumns = numberOfColumns;

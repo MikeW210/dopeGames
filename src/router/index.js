@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import TicTacToe from "../views/tic-tac-toe/TicTacToe.vue";
 import AdvancedTicTacToe from "../views/advanced-tic-tac-toe/AdvancedTicTacToe.vue";
+import Checkers from "../views/checkers/Checkers.vue";
 const routes = [
   {
     path: "/",
@@ -21,6 +22,11 @@ const routes = [
     path: "/advanced-tic-tac-toe",
     name: "AdvancedTicTacToe",
     component: AdvancedTicTacToe,
+  },
+  {
+    path: "/checkers",
+    name: "Checkers",
+    component: Checkers,
   },
   {
     path: "/about",

@@ -7,6 +7,9 @@
       <router-link :to="{ name: 'AdvancedTicTacToe' }">
         <button class="pick-a-game">Play Advanced and Pro TicTacToe</button>
       </router-link>
+      <router-link :to="{ name: 'Checkers' }">
+        <button class="pick-a-game">Play Checkers</button>
+      </router-link>
     </div>
   </div>
 </template>
