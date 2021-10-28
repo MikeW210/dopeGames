@@ -2,6 +2,7 @@
 export default {
   data() {
     return {
+      isYTurn: true,
       board: [],
     };
   },
@@ -35,104 +36,87 @@ export default {
       console.log(this.board);
     },
     startDrag(event, board, rowindex, colindex) {
-      console.log(board[rowindex][colindex]);
-      event.dataTransfer.dropEffect = "move";
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.setData("fieldName", board[rowindex][colindex].name);
-      event.dataTransfer.setData("fieldID", board[rowindex][colindex].id);
-      event.dataTransfer.setData("column", colindex);
-      event.dataTransfer.setData("row", rowindex);
-    },
-    onDrop(event, board, rowindex, colindex) {
-      console.log("board id na poczatku upadku", board[rowindex][colindex].id);
-
-      const itemName = event.dataTransfer.getData("fieldName");
-      const fieldId = event.dataTransfer.getData("fieldID");
-      const column = parseInt(event.dataTransfer.getData("column"));
-      const row = parseInt(event.dataTransfer.getData("row"));
-      if ((rowindex + colindex) % 2 === 0) {
-        console.log("nie mozesz tego zrobic");
-      } else if (
-        board[rowindex][colindex].name !== itemName &&
-        board[rowindex][colindex].name !== ""
-      ) {
-        alert("nie mozesz postawic pionka na pionku przeciwnika");
-      } else if (board[rowindex][colindex].name === itemName) {
-        alert("nie stawiaj swojego pionka na swoim pionku");
-        // } else if (
-        //   rowindex === row + 2 &&
-        //   colindex === column + 2 &&
-        //   board[row + 1][column + 1].name !== itemName &&
-        //   board[row + 1][column + 1].name !== ""
-        // ) {
-        //   //bicie dol prawo
-        //   const originalField = this.findOldField(fieldId);
-        //   console.log("zajebiscie");
-        //   originalField.name = "";
-        //   board[rowindex][colindex].name = itemName;
-        //   board[row + 1][column + 1].name = "";
-        // } else if (
-        //   rowindex === row + 2 &&
-        //   colindex === column - 2 &&
-        //   board[row + 1][column - 1].name !== itemName &&
-        //   board[row + 1][column - 1].name !== ""
-        // ) {
-        //   //bicie dol lewo
-        //   const originalField = this.findOldField(fieldId);
-        //   console.log("zajebiscie");
-        //   originalField.name = "";
-        //   board[rowindex][colindex].name = itemName;
-        //   board[row + 1][column - 1].name = "";
-        // } else if (
-        //   rowindex === row - 2 &&
-        //   colindex === column + 2 &&
-        //   board[row - 1][column + 1].name !== itemName &&
-        //   board[row - 1][column + 1].name !== ""
-        // ) {
-        //   //bicie gora prawo
-        //   const originalField = this.findOldField(fieldId);
-        //   console.log("zajebiscie");
-        //   originalField.name = "";
-        //   board[rowindex][colindex].name = itemName;
-        //   board[row - 1][column + 1].name = "";
-        // } else if (
-        //   rowindex === row - 2 &&
-        //   colindex === column - 2 &&
-        //   board[row - 1][column - 1].name !== itemName &&
-        //   board[row - 1][column - 1].name !== ""
-        // ) {
-        //   // bicie gora lewo
-        //   const originalField = this.findOldField(fieldId);
-        //   console.log("zajebiscie");
-        //   originalField.name = "";
-        //   board[rowindex][colindex].name = itemName;
-        //   board[row - 1][column - 1].name = "";
+      if (this.isYTurn && board[rowindex][colindex].name === "Y") {
+        console.log(board[rowindex][colindex]);
+        event.dataTransfer.dropEffect = "move";
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("fieldName", board[rowindex][colindex].name);
+        event.dataTransfer.setData("fieldID", board[rowindex][colindex].id);
+        event.dataTransfer.setData("column", colindex);
+        event.dataTransfer.setData("row", rowindex);
+      } else if (!this.isYTurn && board[rowindex][colindex].name === "X") {
+        console.log(board[rowindex][colindex]);
+        event.dataTransfer.dropEffect = "move";
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("fieldName", board[rowindex][colindex].name);
+        event.dataTransfer.setData("fieldID", board[rowindex][colindex].id);
+        event.dataTransfer.setData("column", colindex);
+        event.dataTransfer.setData("row", rowindex);
       } else {
-        if (
-          Math.abs(rowindex - row) === 2 ||
-          Math.abs(colindex - column) === 2
-        ) {
-          this.checkForCapturingAPawn(
-            rowindex,
-            colindex,
-            board,
-            column,
-            row,
-            itemName,
-            fieldId
-          );
-        } else if (
-          Math.abs(rowindex - row) > 1 ||
-          Math.abs(colindex - column) > 1
-        ) {
-          alert("nie mozesz robic ruchow o wiecej niz 1 pole");
-        } else {
-          const originalField = this.findOldField(fieldId);
-          console.log(originalField);
-          originalField.name = "";
-          board[rowindex][colindex].name = itemName;
+        alert("nie twoja tura!");
+      }
+    },
+    onDrop(event, board, newRowIndex, newColIndex) {
+      console.log(
+        "board id na poczatku upadku",
+        board[newRowIndex][newColIndex].id
+      );
 
-          console.log("field po przypisaniu", board[rowindex][colindex]);
+      const oldFieldName = event.dataTransfer.getData("fieldName");
+      const oldFieldId = event.dataTransfer.getData("fieldID");
+      const oldColIndex = parseInt(event.dataTransfer.getData("column"));
+      const oldRowIndex = parseInt(event.dataTransfer.getData("row"));
+      if (!this.checkIfMovedBackwards(newRowIndex, oldRowIndex, oldFieldName)) {
+        if (this.checkIfMovedOnDiferentColorOfField(newRowIndex, newColIndex)) {
+          console.log("nie mozesz tego zrobic");
+        } else if (
+          this.checkIfMovedOnEnemyPawn(
+            board,
+            newRowIndex,
+            newColIndex,
+            oldFieldName
+          )
+        ) {
+          alert("nie mozesz postawic pionka na pionku przeciwnika");
+        } else if (
+          this.checkIfMovedOnFriendlyPawn(
+            board,
+            newRowIndex,
+            newColIndex,
+            oldFieldName
+          )
+        ) {
+          alert("nie stawiaj swojego pionka na swoim pionku");
+        } else {
+          if (
+            Math.abs(newRowIndex - oldRowIndex) === 2 &&
+            Math.abs(newColIndex - oldColIndex) === 2
+          ) {
+            this.captureAPawn(
+              newRowIndex,
+              newColIndex,
+              board,
+              oldColIndex,
+              oldRowIndex,
+              oldFieldName,
+              oldFieldId
+            );
+          } else if (
+            this.checkIfMovedFormoreThanOneField(
+              newRowIndex,
+              oldRowIndex,
+              newColIndex,
+              oldColIndex
+            )
+          ) {
+            alert("nie mozesz robic ruchow o wiecej niz 1 pole");
+          } else {
+            const originalField = this.findOldField(oldFieldId);
+            originalField.name = "";
+            board[newRowIndex][newColIndex].name = oldFieldName;
+            this.isYTurn = !this.isYTurn;
+          }
+          this.checkForCapturingAPawn();
         }
       }
     },
@@ -149,56 +133,117 @@ export default {
 
       return oldField;
     },
-    checkForCapturingAPawn(
-      rowindex,
-      colindex,
+    captureAPawn(
+      newRowIndex,
+      newColIndex,
       board,
-      column,
-      row,
-      itemName,
-      fieldId
+      oldColIndex,
+      oldRowIndex,
+      oldFieldName,
+      oldFieldId
     ) {
-      debugger;
       if (
-        rowindex === row + (rowindex - row) &&
-        colindex === column + (colindex - column) &&
-        board[row + (rowindex - row) / 2][column + (colindex - column) / 2]
-          .name !== itemName &&
-        board[row + (rowindex - row) / 2][column + (colindex - column) / 2]
-          .name !== ""
+        this.movedOverEnemyPawn(
+          newRowIndex,
+          oldRowIndex,
+          newColIndex,
+          oldColIndex,
+          oldFieldName,
+          board
+        )
       ) {
-        const originalField = this.findOldField(fieldId);
+        const originalField = this.findOldField(oldFieldId);
         console.log("zajebiscie");
         originalField.name = "";
-        board[rowindex][colindex].name = itemName;
-        board[row + (rowindex - row) / 2][
-          column + (colindex - column) / 2
+        board[newRowIndex][newColIndex].name = oldFieldName;
+        board[oldRowIndex + (newRowIndex - oldRowIndex) / 2][
+          oldColIndex + (newColIndex - oldColIndex) / 2
         ].name = "";
+      } else {
+        alert("nie mozesz poruszac sie wiecej o 1 pole jak nie bijesz");
       }
+    },
+    checkIfMovedBackwards(newRowIndex, oldRowIndex, oldFieldName) {
+      let backwards = false;
+      if (oldFieldName === "X") {
+        if (oldRowIndex - newRowIndex < 0) {
+          alert("nie mozna isc do tylu");
+          backwards = true;
+        }
+      }
+      if (oldFieldName === "Y") {
+        if (oldRowIndex - newRowIndex > 0) {
+          alert("nie mozna isc do tylu");
+          backwards = true;
+        }
+      }
+      return backwards;
+    },
+    checkForCapturingAPawn() {
+      for (let row = 0; row < 7; row++) {
+        for (let column = 0; column < 7; column++) {
+          if (
+            this.board[row][column].name !==
+              this.board[row + 1][column + 1].name &&
+            this.board[row + 1][column + 1].name !== "" &&
+            this.board[row][column].name !== ""
+          ) {
+            console.log("musisz bic");
+          }
+        }
+      }
+    },
+    movedOverEnemyPawn(
+      newRowIndex,
+      oldRowIndex,
+      newColIndex,
+      oldColIndex,
+      oldFieldName,
+      board
+    ) {
+      return (
+        board[oldRowIndex + (newRowIndex - oldRowIndex) / 2][
+          oldColIndex + (newColIndex - oldColIndex) / 2
+        ].name !== oldFieldName &&
+        board[oldRowIndex + (newRowIndex - oldRowIndex) / 2][
+          oldColIndex + (newColIndex - oldColIndex) / 2
+        ].name !== ""
+      );
+    },
+    checkIfMovedOnDiferentColorOfField(newRowIndex, newColIndex) {
+      return (newRowIndex + newColIndex) % 2 === 0;
+    },
+    checkIfMovedOnEnemyPawn(board, newRowIndex, newColIndex, oldFieldName) {
+      return (
+        board[newRowIndex][newColIndex].name !== oldFieldName &&
+        board[newRowIndex][newColIndex].name !== ""
+      );
+    },
+    checkIfMovedOnFriendlyPawn(board, newRowIndex, newColIndex, oldFieldName) {
+      return board[newRowIndex][newColIndex].name === oldFieldName;
+    },
+    checkIfMovedFormoreThanOneField(
+      newRowIndex,
+      oldRowIndex,
+      newColIndex,
+      oldColIndex
+    ) {
+      return (
+        Math.abs(newRowIndex - oldRowIndex) > 1 ||
+        Math.abs(newColIndex - oldColIndex) > 1
+      );
     },
   },
 };
-// checkForMoves(field, board) {
-//   console.log(field);
-//   for (let i = 0; i < 8; i++) {
-//     for (let j = 0; j < 8; j++) {
-//       if (board[i][j] === field) {
-//         if (
-//           board[i + 1][j - 1].id === field.id + 7 &&
-//           board[i + 1][j - 1].name === ""
-//         ) {
-//           board[i + 1][j - 1].name = j + 1;
-//           console.log(board);
-//         }
-//       }
-//     }
-//   }
-// },
 </script>
 
 <template>
   <h1>Checkers</h1>
-  <button @click="createBoard">Nakurwiaj wegoza</button>
+  <div class="statistics">
+    <button class="button" @click="createBoard">Nakurwiaj wegoza</button>
+    <span class="turn" v-if="isYTurn">Whites Turn</span>
+    <span class="turn" v-else>Blacks Turn</span>
+  </div>
   <div class="container">
     <div class="rows" :key="rowindex" v-for="(row, rowindex) in board">
       <div
@@ -228,7 +273,7 @@ export default {
           <i
             draggable="true"
             @dragstart="startDrag($event, board, rowindex, colindex)"
-            class="far fa-circle"
+            class="far fa-circle light"
         /></span>
       </div>
     </div>
@@ -284,5 +329,31 @@ export default {
   border-radius: 15px;
   cursor: pointer;
   margin: 3px;
+}
+.light {
+  color: azure;
+}
+.statistics {
+  display: flex;
+  justify-content: center;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.button {
+  width: 9em;
+  height: 3em;
+  border-radius: 10px;
+  background: rgb(93, 11, 170);
+  box-shadow: 1px 1px 1px rgb(65, 58, 58);
+  font-size: 1rem;
+  letter-spacing: 0.08rem;
+  position: relative;
+  margin: 1em;
+  cursor: pointer;
+}
+.turn {
+  font-size: 1.5em;
+  color: white;
+  font-weight: 600;
 }
 </style>
